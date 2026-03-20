@@ -8,6 +8,8 @@
 #include <iostream>
 #include <iomanip>
 #include <ctime>
+#include <openssl/sha.h>
+#include <cstring>
 
 Torrent Torrent::fromFile(const std::string& path)
 {
@@ -73,19 +75,36 @@ Torrent Torrent::fromFile(const std::string& path)
 
         t.is_multi_file = true;
     }
+    
+    unsigned char hash[SHA_DIGEST_LENGTH];
+    SHA1(reinterpret_cast<const unsigned char*>(t.raw_info.data()), t.raw_info.size(), hash);
+    std::memcpy(t.info_hash.data(), hash, 20);
+
+    /* parse pieces hashs */
+    if (info.dict_value.count("pieces")) {
+        std::string pieces_str = info.dict_value["pieces"].string_value;
+        size_t num_pieces = pieces_str.size() / 20;
+        t.pieces.resize(num_pieces);
+        for (size_t i = 0; i < num_pieces; ++i) {
+            std::memcpy(t.pieces[i].data(), pieces_str.data() + i * 20, 20);
+        }
+    }
+
+
 
     return t;
 }
 
 void Torrent::printInfo() const
 {   
-
     std::cout << "Announce: " << announce << std::endl;
     std::cout << "Comment: " << comment << std::endl;
     std::cout << "Creation Date: " << humanReadableTime(creation_date) << std::endl;
     std::cout << "Name: " << name << std::endl;
+    std::cout << "Info Hash: " << urlEncode(info_hash.data(), info_hash.size()) << std::endl;
     std::cout << "Piece Length: " << humanReadableSize(piece_length) << std::endl;
     std::cout << "Length: " << humanReadableSize(length) << std::endl;
+
     if (is_multi_file) {
         std::cout << "Files:" << std::endl;
         for (const auto& file : files) {

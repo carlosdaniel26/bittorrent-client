@@ -22,3 +22,34 @@ std::string humanReadableTime(int64_t seconds) {
     out << std::put_time(tm_info, "%Y-%m-%d %H:%M:%S");
     return out.str();
 }
+
+std::string urlEncode(const uint8_t* data, size_t len)
+{
+    std::ostringstream escaped;
+    escaped.fill('0');
+    escaped << std::hex;
+
+    for (size_t i = 0; i < len; ++i) {
+        char c = data[i];
+        if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+            escaped << c;
+        } else {
+            escaped << '%' << std::setw(2) << int((unsigned char)c);
+        }
+    }
+
+    return escaped.str();
+}
+
+std::string generateRandomID(size_t length)
+{
+    const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    std::string result;
+    result.resize(length);
+
+    for (size_t i = 0; i < length; ++i) {
+        result[i] = charset[rand() % (sizeof(charset) - 1)];
+    }
+
+    return result;
+}

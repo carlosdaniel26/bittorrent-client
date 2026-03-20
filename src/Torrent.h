@@ -8,16 +8,17 @@
 
 #include "Bencode.h"
 
+using InfoHash = std::array<unsigned char, 20>;
+
 class Torrent {
  public:
     static Torrent fromFile(const std::string& path);
     static Torrent fromBytes(const std::string& data);
     void printInfo() const;
 
- private:
     std::string announce;
     std::vector<std::string> announce_list;
-    std::array<uint8_t, 20> info_hash;
+    InfoHash info_hash;
 
     std::string comment;
     int64_t creation_date;
@@ -25,7 +26,7 @@ class Torrent {
     std::string name;
     int64_t piece_length;
 
-    std::vector<std::array<uint8_t, 20>> pieces;
+    std::vector<InfoHash> pieces;
 
     /* actual files */
     struct File {

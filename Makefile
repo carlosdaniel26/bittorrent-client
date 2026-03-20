@@ -1,5 +1,6 @@
 CC := gcc
 CXX := g++
+LIBS := -lssl -lcrypto -lcurl
 CFLAGS := -Wall -Wextra -O2
 CXXFLAGS := -Wall -Wextra -O2
 
@@ -17,25 +18,29 @@ OBJ := $(OBJ_C) $(OBJ_CPP)
 
 all: $(BUILD_DIR)/$(TARGET)
 
+# linking
 $(BUILD_DIR)/$(TARGET): $(OBJ)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	@$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
+	@echo "(LINK) $@"
 
 # C
 $(BUILD_DIR)/%.o: %.c
-	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@mkdir -p $(dir $@)
+	@$(CC) $(CFLAGS) -c $< -o $@
+	@echo "(CC) $< -> $@"
 
 # C++
 $(BUILD_DIR)/%.o: %.cpp
-	mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	@mkdir -p $(dir $@)
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
+	@echo "(CXX) $< -> $@"
 
 $(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+	@mkdir -p $(BUILD_DIR)
 
 run: $(BUILD_DIR)/$(TARGET)
-	./$(BUILD_DIR)/$(TARGET) $(TORRENT_FILE)
+	@echo "(RUN) ./$(BUILD_DIR)/$(TARGET) $(TORRENT_FILE)"
+	@./$(BUILD_DIR)/$(TARGET) $(TORRENT_FILE)
 
 clean:
 	rm -rf $(BUILD_DIR)

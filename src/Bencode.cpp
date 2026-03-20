@@ -116,7 +116,11 @@ std::string Bencode::serialize(const Bencode::Value& value)
         case Bencode::Value::Type::Dictionary: {
             std::string result = "d";
             for (const auto& pair : value.dict_value) {
-                result += serialize(Bencode::Value{Bencode::Value::Type::String, 0, pair.first}) + serialize(pair.second);
+                Bencode::Value key{};
+                key.type = Bencode::Value::Type::String;
+                key.string_value = pair.first;
+
+                result += serialize(key) + serialize(pair.second);
             }
             result += "e";
             return result;
