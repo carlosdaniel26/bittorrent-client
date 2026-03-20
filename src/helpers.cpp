@@ -1,6 +1,7 @@
 #include <array>
 #include <string>
 #include <iostream>
+#include <cctype>
 
 #include "helpers.h"
 #include "Torrent.h"
@@ -36,8 +37,8 @@ std::string urlEncode(const uint8_t* data, size_t len)
     escaped << std::hex;
 
     for (size_t i = 0; i < len; ++i) {
-        char c = data[i];
-        if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+        char c = static_cast<char>(data[i]);
+        if (std::isalnum(static_cast<unsigned char>(c)) || c == '-' || c == '_' || c == '.' || c == '~') {
             escaped << c;
         } else {
             escaped << '%' << std::setw(2) << int((unsigned char)c);

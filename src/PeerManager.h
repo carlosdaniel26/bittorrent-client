@@ -9,17 +9,21 @@
 #include "Peer.h"
 #include "Piece.h"
 #include "Torrent.h"
+#include "Messages.h"
+
+#include "PieceManager.h"
 
 class PeerManager {
 private:
     std::vector<Peer> peers;
     InfoHash info_hash;
 
-    int piece_length;
-    int total_pieces;
-    std::vector<Piece> pieces;
+    PieceManager* piece_manager = nullptr;
 
 public:
+    PeerManager(const InfoHash& hash, PieceManager* pm) : info_hash(hash), piece_manager(pm) {}
+    PeerManager() = default;
+
     void addPeer(const Peer& peer);
     void addPeers(const std::vector<Peer>& peers);
     
@@ -29,4 +33,6 @@ public:
 
     void startConnections();
     void requestPieces();
+
+    void processPeerMessage(Peer& peer);
 };

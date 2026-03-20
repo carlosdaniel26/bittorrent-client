@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <optional>
 
 #include "Bencode.h"
 
@@ -16,8 +17,13 @@ class Torrent {
     static Torrent fromBytes(const std::string& data);
     void printInfo() const;
 
+    std::optional<std::string> selectWorkingTracker(const std::string& peer_id);
+
     std::string announce;
     std::vector<std::string> announce_list;
+
+    std::vector<std::vector<std::string>> trackers;
+    
     InfoHash info_hash;
 
     std::string comment;
