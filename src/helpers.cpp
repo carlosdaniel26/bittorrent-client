@@ -1,4 +1,10 @@
+#include <array>
+#include <string>
+#include <iostream>
+
 #include "helpers.h"
+#include "Torrent.h"
+
 
 std::string humanReadableSize(int64_t bytes) {
     const char* suffixes[] = {"B", "KB", "MB", "GB", "TB", "PB"};
@@ -52,4 +58,28 @@ std::string generateRandomID(size_t length)
     }
 
     return result;
+}
+
+std::string generatePeerID()
+{
+    /* 20 bytes total */
+    return "-CT1000-" + generateRandomID(12);
+}
+
+std::string buildHandshakeMessage(const InfoHash& info_hash, const std::string& client_peer_id)
+{
+    if (client_peer_id.size() != 20) throw std::runtime_error("client_peer_id must be 20 bytes");
+    
+    std::string hash_str(info_hash.begin(), info_hash.end());
+    
+
+    std::string handshake;
+    handshake += char(19); // Protocol string length
+    handshake += "BitTorrent protocol"; // Protocol string
+    handshake += std::string(8, '\0'); // Reserved bytes
+    handshake += hash_str; // Info hash (20 bytes)
+    handshake += client_peer_id; // Peer ID (20 bytes)
+
+    if (client_peer_id.size() != 20) throw std::runtime_error("client_peer_id must be 20 bytes");
+    return handshake;
 }

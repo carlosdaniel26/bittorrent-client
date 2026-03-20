@@ -1,5 +1,10 @@
+#pragma once
+
 #include <string>
 #include <cstdint>
+#include <vector>
+#include <sys/socket.h>
+#include <cstdbool>
 
 class Peer {
 public:
@@ -7,4 +12,9 @@ public:
 
     std::string ip;
     uint16_t port;
+    int socket_fd;
+    bool choke;
+    bool interested;
+    bool active;
+    std::vector<bool> pieces_bitfield;
 };
